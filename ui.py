@@ -25,6 +25,14 @@ def display_text(pyxel, x, y, txt):
         pyxel.blt(x + (index * 8), y, 0, CHAR_POS[s][0], CHAR_POS[s][1], 8, 8, 0)
 
 
+class UIEvent:
+    def __init__(self, callback):
+        self.callback = callback
+
+    def call(self, *args, **kwargs):
+        self.callback(*args, **kwargs)
+
+
 class MessageBox:
     'メッセージボックスを表示する'
     COLOR = 7
@@ -52,6 +60,11 @@ class MessageBox:
             self.frame_count = self.pyxel.frame_count
             self.message = self.queue.pop(0)
 
+    def showall(self):
+        if self.queue:
+            self.frame_count = -999
+            self.message = self.queue.pop(0)
+
     def draw(self):
         self.pyxel.rect(self.x, self.y, self.x + self.width, self.y + self.height, MessageBox.BACKGROUND)
         self.pyxel.rectb(self.x, self.y, self.x + self.width, self.y + self.height, MessageBox.COLOR)
@@ -67,10 +80,18 @@ class MessageBox:
                 if str_count <= 0:
                     break
 
+
+class MouseEvent:
+    def __init__(self, x, y, key):
+        self.x = x
+        self.y = y
+        self.key = key
+
+
 class Button:
     BORDER_COLOR = 7
 
-    def __init__(self, pyxel, x, y , width, height):
+    def __init__(self, pyxel, x, y , width, height, callback):
         self.pyxel = pyxel
         self.x = x              # ボックスの左
         self.y = y              # ボックスの上
@@ -81,11 +102,14 @@ class Button:
         self.color = 0
         self.default_color = 0
         self.hover_color = 5
+        self.callback = callback
 
     def update(self):
         if (self.x <= self.pyxel.mouse_x <= self.x + self.width + (self.padding_x * 2) and
             self.y <= self.pyxel.mouse_y <= self.y + self.height + (self.padding_y * 2)):
             self.color = self.hover_color
+            if self.pyxel.btn(self.pyxel.MOUSE_LEFT_BUTTON):
+                self.callback.call(MouseEvent(self.pyxel.mouse_x, self.pyxel.mouse_y, self.pyxel.MOUSE_LEFT_BUTTON))
         else:
             self.color = self.default_color
 
@@ -94,8 +118,8 @@ class Button:
 
 
 class MessageButton(Button):
-    def __init__(self, pyxel, x, y, message):
-        super().__init__(pyxel, x, y, len(message)* 8, 8)
+    def __init__(self, pyxel, x, y, message, callback):
+        super().__init__(pyxel, x, y, len(message)* 8, 8, callback)
         self.message = message
         self.padding_x = 8      # 線からの横padding
         self.padding_y = 8      # 線からの縦padding
