@@ -1,12 +1,12 @@
 import pyxel
-from scene import TestScene
+from scenes import title
     
 
 class App:
     def __init__(self):
         pyxel.init(255, 224)
 
-        self.scene = TestScene()
+        self.scene = title.TitleScene()
         pyxel.run(self.update, self.draw)
 
     def update(self):

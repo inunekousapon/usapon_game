@@ -3,7 +3,7 @@ import numpy as np
 
 from pyxel.tilemap import copy_ndarray
 
-from message import MessageBox
+import ui
 from chara import Usagi
 from chara import YUSYA, MAHO_TSUKAI, SOURYO, SENSHI
 
@@ -122,7 +122,7 @@ class TestScene(Scene):
         self.tilemap_over.set_tilemap32(0, 0, self.data, 0)
 
         # メッセージ
-        self.messagebox = MessageBox(pyxel, 5, 174, 245, 48)
+        self.messagebox = ui.MessageBox(pyxel, 5, 174, 245, 48)
         self.messagebox.put('''メッセージは　スペースキーを　おすと　つぎのぶんしょうを
         みることができるよ！！'''
         )
@@ -130,6 +130,12 @@ class TestScene(Scene):
         
         はやくいろいろためさないといけない。'''
         )
+
+        pyxel.mouse(True)
+        self.buttons = [
+            ui.MessageButton(pyxel, 50, 50, "たたかう"),
+            ui.MessageButton(pyxel, 150, 50, "にげる")
+        ]
 
     def update(self):
         # スペース押したらメッセージを進める
@@ -154,6 +160,8 @@ class TestScene(Scene):
         # うさぎたちの位置を全部更新する
         [usagi.update() for usagi in self.usagii]
 
+        [button.update() for button in self.buttons]
+
     def draw(self):
         pyxel.cls(0)
 
@@ -167,4 +175,6 @@ class TestScene(Scene):
 
         # メッセージボックスを描く
         self.messagebox.draw()
+
+        [button.draw() for button in self.buttons]
     

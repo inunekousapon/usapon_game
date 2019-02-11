@@ -61,8 +61,47 @@ class MessageBox:
         if self.message:
             lines = self.message.split('\n')
             for index, line in enumerate(lines):
-                #line = line.strip()
+                line = line.strip()
                 display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y + index * 10, line[:str_count])
                 str_count -= len(line)
                 if str_count <= 0:
                     break
+
+class Button:
+    BORDER_COLOR = 7
+
+    def __init__(self, pyxel, x, y , width, height):
+        self.pyxel = pyxel
+        self.x = x              # ボックスの左
+        self.y = y              # ボックスの上
+        self.width = width      # 横幅
+        self.height = height    # 高さ
+        self.padding_x = 4      # 線からの横padding
+        self.padding_y = 4      # 線からの縦padding
+        self.color = 0
+        self.default_color = 0
+        self.hover_color = 5
+
+    def update(self):
+        if (self.x <= self.pyxel.mouse_x <= self.x + self.width + (self.padding_x * 2) and
+            self.y <= self.pyxel.mouse_y <= self.y + self.height + (self.padding_y * 2)):
+            self.color = self.hover_color
+        else:
+            self.color = self.default_color
+
+    def draw(self):
+        pass
+
+
+class MessageButton(Button):
+    def __init__(self, pyxel, x, y, message):
+        super().__init__(pyxel, x, y, len(message)* 8, 8)
+        self.message = message
+        self.padding_x = 8      # 線からの横padding
+        self.padding_y = 8      # 線からの縦padding
+
+    def draw(self):
+        self.pyxel.rect(self.x, self.y, self.x + self.width + (self.padding_x * 2), self.y + self.height + (self.padding_y * 2), self.color)
+        self.pyxel.rectb(self.x, self.y, self.x + self.width + (self.padding_x * 2), self.y + self.height + (self.padding_y * 2), Button.BORDER_COLOR)
+        if self.message:
+            display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y, self.message)
