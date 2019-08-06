@@ -26,11 +26,14 @@ def display_text(pyxel, x, y, txt):
 
 
 class UIEvent:
-    def __init__(self, callback):
+    def __init__(self, owner, callback, **kwargs):
+        self.owner = owner
         self.callback = callback
+        self.kwargs = kwargs
 
     def call(self, *args, **kwargs):
-        self.callback(*args, **kwargs)
+        kwargs.update(self.kwargs)
+        self.callback(self.owner, **kwargs)
 
 
 class MessageBox:
@@ -66,8 +69,8 @@ class MessageBox:
             self.message = self.queue.pop(0)
 
     def draw(self):
-        self.pyxel.rect(self.x, self.y, self.x + self.width, self.y + self.height, MessageBox.BACKGROUND)
-        self.pyxel.rectb(self.x, self.y, self.x + self.width, self.y + self.height, MessageBox.COLOR)
+        self.pyxel.rect(self.x, self.y, self.width, self.height, MessageBox.BACKGROUND)
+        self.pyxel.rectb(self.x, self.y, self.width, self.height, MessageBox.COLOR)
 
         # 1フレームずつ表示する文字列の長さを変えていく
         str_count = self.pyxel.frame_count - self.frame_count
@@ -108,7 +111,7 @@ class Button:
         if (self.x <= self.pyxel.mouse_x <= self.x + self.width + (self.padding_x * 2) and
             self.y <= self.pyxel.mouse_y <= self.y + self.height + (self.padding_y * 2)):
             self.color = self.hover_color
-            if self.pyxel.btn(self.pyxel.MOUSE_LEFT_BUTTON):
+            if self.callback and self.pyxel.btn(self.pyxel.MOUSE_LEFT_BUTTON):
                 self.callback.call(MouseEvent(self.pyxel.mouse_x, self.pyxel.mouse_y, self.pyxel.MOUSE_LEFT_BUTTON))
         else:
             self.color = self.default_color
@@ -125,7 +128,7 @@ class MessageButton(Button):
         self.padding_y = 8      # 線からの縦padding
 
     def draw(self):
-        self.pyxel.rect(self.x, self.y, self.x + self.width + (self.padding_x * 2), self.y + self.height + (self.padding_y * 2), self.color)
-        self.pyxel.rectb(self.x, self.y, self.x + self.width + (self.padding_x * 2), self.y + self.height + (self.padding_y * 2), Button.BORDER_COLOR)
+        self.pyxel.rect(self.x, self.y, self.width + (self.padding_x * 2), self.height + (self.padding_y * 2), self.color)
+        self.pyxel.rectb(self.x, self.y, self.width + (self.padding_x * 2), self.height + (self.padding_y * 2), Button.BORDER_COLOR)
         if self.message:
             display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y, self.message)

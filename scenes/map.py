@@ -1,11 +1,36 @@
 import pyxel
 import numpy as np
 
-from pyxel.tilemap import copy_ndarray
-
 import ui
 from chara import Usagi
 from chara import YUSYA, MAHO_TSUKAI, SOURYO, SENSHI
+
+
+def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
+    dh, dw = dest.shape
+    sh, sw = src.shape
+    cw = cw or sw
+    ch = ch or sh
+
+    rx1 = max(max(-dx, 0), max(-sx, 0))
+    ry1 = max(max(-dy, 0), max(-sy, 0))
+    rx2 = max(max(dx + cw - dw, 0), max(sx + cw - sw, 0))
+    ry2 = max(max(dy + ch - dh, 0), max(sy + ch - sh, 0))
+
+    cw -= rx1 + rx2
+    ch -= ry1 + ry2
+
+    if cw <= 0 or ch <= 0:
+        return False
+
+    dx += rx1
+    dy += ry1
+    sx += rx1
+    sy += ry1
+
+    dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
+
+    return True
 
 
 class TilemapHelper:
@@ -94,7 +119,8 @@ class TestScene(Scene):
     ]
 
     def __init__(self):
-        pyxel.image(0).load(0, 0, 'asset/system.bmp')
+        import os
+        pyxel.image(0).load(0, 0, os.path.join(os.getcwd(), 'asset/system.bmp'))
 
         # うさぎたち
         self.yusya = Usagi(YUSYA, 2, 4)
@@ -123,19 +149,17 @@ class TestScene(Scene):
 
         # メッセージ
         self.messagebox = ui.MessageBox(pyxel, 5, 174, 245, 48)
-        self.messagebox.put('''メッセージは　スペースキーを　おすと　つぎのぶんしょうを
-        みることができるよ！！'''
+        self.messagebox.put('''Ｐｙｘｅｌ１．２．０にたいおうしたよ！！
+        けっこうかきかえるところたくさんあったよ'''
         )
-        self.messagebox.put('''こんなふうにね！！
-        
-        はやくいろいろためさないといけない。'''
-        )
+        self.messagebox.put('''ＷＥＢでじっこうできるとうれしいな！！''')
 
         pyxel.mouse(True)
-        self.buttons = [
-            ui.MessageButton(pyxel, 50, 50, "たたかう"),
-            ui.MessageButton(pyxel, 150, 50, "にげる")
-        ]
+        self.buttons = []
+        #self.buttons = [
+        #    ui.MessageButton(pyxel, 50, 50, "たたかう", None),
+        #    ui.MessageButton(pyxel, 150, 50, "にげる", None)
+        #]
 
     def update(self):
         # スペース押したらメッセージを進める
