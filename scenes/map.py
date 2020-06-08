@@ -202,6 +202,15 @@ class TestScene(Scene):
 
         [button.update() for button in self.buttons]
 
+    def draw_map_mouse_rect(self):
+        if (0 <= pyxel.mouse_x <= 255) and (0 <= pyxel.mouse_y <= 224):
+            x = pyxel.mouse_x // 16
+            y = pyxel.mouse_y // 16
+            if self.data[y][x] in self.CANMOVE:
+                pyxel.rect(x * 16, y * 16, 16, 16, 6)
+            else:
+                pyxel.rect(x * 16, y * 16, 16, 16, 8)
+
     def draw(self):
         pyxel.cls(0)
 
@@ -212,6 +221,9 @@ class TestScene(Scene):
 
         # うさぎたちを描く
         [usagi.draw() for usagi in self.usagii]
+
+        # マウスの位置を書く
+        self.draw_map_mouse_rect()
 
         # メッセージボックスを描く
         self.messagebox.draw()
