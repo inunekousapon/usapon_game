@@ -27,7 +27,6 @@ def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
     dy += ry1
     sx += rx1
     sy += ry1
-
     dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
 
     return True
@@ -50,23 +49,21 @@ class TilemapHelper:
         '''
         if refimg is not None:
             tilemap.refimg = refimg
-        copy_ndarray(tilemap._data, x, y, np.array(data))
-    
+        tilemap.set(x, y, data)
+        
     def set_tilemap32(self, x, y, data32, refimg=None):
         "pixelは8だけどこれは16ごとにタイルを扱う"
         data = []
         for line in data32:
-            list1 = []
-            list2 = []
+            list1 = ''
+            list2 = ''
             for e in line:
                 r0 = e[0] * 2 + (e[1] * 0x40)
                 r1 = (e[0] * 2) + 1 + (e[1] * 0x40)
                 r2 = e[0] * 2 + (e[1] * 0x40) + 0x20
                 r3 = (e[0] * 2) + 1 + (e[1] * 0x40) + 0x20
-                list1.append(r0)
-                list1.append(r1)
-                list2.append(r2)
-                list2.append(r3)
+                list1 += format(r0, 'x') + format(r1, 'x')
+                list2 += format(r2, 'x') + format(r3, 'x')
             data.append(list1)
             data.append(list2)
         TilemapHelper.set_tilemap(self.tilemap, x, y, data, refimg)
@@ -117,6 +114,7 @@ class TestScene(Scene):
         [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
         [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
     ]
+    CANMOVE = (k,)
 
     def __init__(self):
         import os
@@ -149,10 +147,12 @@ class TestScene(Scene):
 
         # メッセージ
         self.messagebox = ui.MessageBox(pyxel, 5, 174, 245, 48)
-        self.messagebox.put('''Ｐｙｘｅｌ１．２．０にたいおうしたよ！！
-        けっこうかきかえるところたくさんあったよ'''
+        self.messagebox.put('''みずにははいれないようになりました。'''
         )
-        self.messagebox.put('''ＷＥＢでじっこうできるとうれしいな！！''')
+        self.messagebox.put('''きもはいれないようになりました''')
+
+        self.messagebox.put('''つぎはマウスでせんたくしたばしょに
+        じどうてきにいどうするようにします。''')
 
         pyxel.mouse(True)
         self.buttons = []
@@ -170,16 +170,32 @@ class TestScene(Scene):
         #if pyxel.btnp(pyxel.KEY_C):
         #    self.target += 1
 
-        # これはドラクエ歩きのサンプル
-        # 1匹だけ入力可にする
-        if self.usagii[0].input() and self.usagii[0]._move:
-            self.usagii[1]._move = True
-            self.usagii[1]._direct = self.direct_history[-1]
-            self.usagii[2]._move = True
-            self.usagii[2]._direct = self.direct_history[-2]
-            self.usagii[3]._move = True
-            self.usagii[3]._direct = self.direct_history[-3]
-            self.direct_history.append(self.usagii[0]._direct)
+        # mapの先が進めなければ移動させない
+        can_move = False
+        if pyxel.btn(pyxel.KEY_UP):
+            if self.data[self.usagii[0].pos_y - 1][self.usagii[0].pos_x] in self.CANMOVE:
+                can_move = True
+        elif pyxel.btn(pyxel.KEY_DOWN):
+            if self.data[self.usagii[0].pos_y + 1][self.usagii[0].pos_x] in self.CANMOVE:
+                can_move = True
+        elif pyxel.btn(pyxel.KEY_RIGHT):
+            if self.data[self.usagii[0].pos_y][self.usagii[0].pos_x + 1] in self.CANMOVE:
+                can_move = True
+        elif pyxel.btn(pyxel.KEY_LEFT):
+            if self.data[self.usagii[0].pos_y][self.usagii[0].pos_x - 1] in self.CANMOVE:
+                can_move = True
+        
+        if can_move:
+            # これはドラクエ歩きのサンプル
+            # 1匹だけ入力可にする
+            if self.usagii[0].input() and self.usagii[0]._move:
+                self.usagii[1]._move = True
+                self.usagii[1]._direct = self.direct_history[-1]
+                self.usagii[2]._move = True
+                self.usagii[2]._direct = self.direct_history[-2]
+                self.usagii[3]._move = True
+                self.usagii[3]._direct = self.direct_history[-3]
+                self.direct_history.append(self.usagii[0]._direct)
 
         # うさぎたちの位置を全部更新する
         [usagi.update() for usagi in self.usagii]

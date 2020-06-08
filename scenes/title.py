@@ -6,13 +6,10 @@ class BaseState:
     def __init__(self, scene):
         self.scene = scene
         self.messagebox = ui.MessageBox(pyxel, 5, 174, 245, 48)
-        self.messagebox.put('''うさぽんゲーム　Ｖ１．００
-        ''')
+        self.messagebox.put('''うさぽんゲーム（かり）　Ｖ０．０１''')
         self.messagebox.showall()
         self.buttons = [
-            ui.MessageButton(pyxel, 50, 30, "あたらしくはじめる", ui.UIEvent(self, self.startgame_event)),
-            ui.MessageButton(pyxel, 50, 70, "つづきからはじめる", ui.UIEvent(self, self.continuegame_event)),
-            ui.MessageButton(pyxel, 50, 110, "オプション", ui.UIEvent(self, self.option_event))
+            ui.MessageButton(pyxel, 20, 40, "はじめる", ui.UIEvent(self, self.startgame_event)),
         ]
 
     def update(self):
@@ -39,16 +36,14 @@ class UpdateState:
         self.scene = scene
         self.select_mode = 0  # 0:none 1:easy 2:normal 3:hard
         self.buttons = [
-            ui.MessageButton(pyxel, 30, 60, "ふつう", ui.UIEvent(self, self.yes_event, mode=1)),
-            ui.MessageButton(pyxel, 100, 60, "むずかしい", ui.UIEvent(self, self.yes_event, mode=2)),
-            ui.MessageButton(pyxel, 190, 60, "むり", ui.UIEvent(self, self.yes_event, mode=3)),
+            ui.MessageButton(pyxel, 50, 60, "ＰＹＸＥＬ　Ｖ１．４１にたいおう", ui.UIEvent(self, self.yes_event, mode=2)),
             ui.MessageButton(pyxel, 105, 110, "もどる", ui.UIEvent(self, self.cancel_event)),
         ]
         self.messagebox = ui.MessageBox(pyxel, 5, 174, 245, 48)
-        self.messagebox.put('''なんいどをせんたくしてください。
-        ふつう：さいしょからなかまをやとうことができます。
-        むずかしい：モンスターがつよく、しょじきんがすくないです。
-        むり：モンスターがとてもつよく、しょじきんがありません。''')
+        self.messagebox.put('''タイルマップのしょりをかえました。
+        がぞうのいろがかわってしまったきがします。
+        リリースノートをよんでしゅうせいしないとだめですね。。
+        また、いどうできないちけいにはいけないようにしました。''')
         self.messagebox.showall()
 
     def update(self):

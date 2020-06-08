@@ -67,6 +67,8 @@ class Usagi(Charactor):
                 self.pos_x -= 1
             elif self._direct == 3:
                 self.pos_x += 1
+            print("x: {}".format(self.pos_x))
+            print("y: {}".format(self.pos_y))
         if self._direct == 0:
             self._y_delta = -1 * self._move_delta
         elif self._direct == 1:
