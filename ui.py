@@ -1,30 +1,6 @@
 import sys
 
 
-# 表示文字情報(画像と合わせること)
-CHARS = '''０１２３４５６７８９、。，．・：；？！　
-ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ
-ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ
-ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただ
-ちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむ
-めもゃやゅゆょよらりるれろゎわゐゑをん
-ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダ
-チヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミム
-メモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ
-ー―‐／＼〜‖｜…‥‘’“”（）〔〕［］｛｝〈〉《》「」『』【】'''
-
-CHAR_POS = {}
-for line_no, line in enumerate(CHARS.split('\n')):
-    for index, char in enumerate(line):
-        CHAR_POS[char] = (index * 8, line_no * 8)
-
-def display_text(pyxel, x, y, txt):
-    for index, s in enumerate(txt):
-        if not s in CHAR_POS:
-            s = '？'
-        pyxel.blt(x + (index * 8), y, 0, CHAR_POS[s][0], CHAR_POS[s][1], 8, 8, 0)
-
-
 class UIEvent:
     def __init__(self, owner, callback, **kwargs):
         self.owner = owner
@@ -41,7 +17,8 @@ class MessageBox:
     COLOR = 7
     BACKGROUND = 0
 
-    def __init__(self, pyxel, x, y, width, height):
+    def __init__(self, pyxel, font, x, y, width, height):
+        self.font = font
         self.pyxel = pyxel
         self.x = x              # ボックスの左
         self.y = y              # ボックスの上
@@ -78,7 +55,7 @@ class MessageBox:
             lines = self.message.split('\n')
             for index, line in enumerate(lines):
                 line = line.strip()
-                display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y + index * 10, line[:str_count])
+                self.font.display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y + index * 10, line[:str_count])
                 str_count -= len(line)
                 if str_count <= 0:
                     break
@@ -121,8 +98,9 @@ class Button:
 
 
 class MessageButton(Button):
-    def __init__(self, pyxel, x, y, message, callback):
-        super().__init__(pyxel, x, y, len(message)* 8, 8, callback)
+    def __init__(self, pyxel, font, x, y, message, callback):
+        super().__init__(pyxel, x, y, len(message)* 10, 10, callback)
+        self.font = font
         self.message = message
         self.padding_x = 8      # 線からの横padding
         self.padding_y = 8      # 線からの縦padding
@@ -131,4 +109,4 @@ class MessageButton(Button):
         self.pyxel.rect(self.x, self.y, self.width + (self.padding_x * 2), self.height + (self.padding_y * 2), self.color)
         self.pyxel.rectb(self.x, self.y, self.width + (self.padding_x * 2), self.height + (self.padding_y * 2), Button.BORDER_COLOR)
         if self.message:
-            display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y, self.message)
+            self.font.display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y, self.message)

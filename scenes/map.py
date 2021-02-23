@@ -1,5 +1,6 @@
 import pyxel
 import numpy as np
+import scipy
 
 import ui
 from chara import Usagi
@@ -30,6 +31,12 @@ def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
     dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
 
     return True
+
+def adjacency_matrix(data):
+    for i, a in enumerate(data):
+        for j, b in enumerate(a):
+            if i > 0:
+                pass
 
 
 class TilemapHelper:
@@ -70,7 +77,7 @@ class TilemapHelper:
         
 
 class Scene:
-    def __init__(self):
+    def __init__(self, app):
         # ロード処理
         pass
 
@@ -116,9 +123,8 @@ class TestScene(Scene):
     ]
     CANMOVE = (k,)
 
-    def __init__(self):
-        import os
-        pyxel.image(0).load(0, 0, os.path.join(os.getcwd(), 'asset/system.bmp'))
+    def __init__(self, app):
+        self.app = app
 
         # うさぎたち
         self.yusya = Usagi(YUSYA, 2, 4)
@@ -146,13 +152,19 @@ class TestScene(Scene):
         self.tilemap_over.set_tilemap32(0, 0, self.data, 0)
 
         # メッセージ
-        self.messagebox = ui.MessageBox(pyxel, 5, 174, 245, 48)
-        self.messagebox.put('''みずにははいれないようになりました。'''
+        self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
+        self.messagebox.put('''やはり漢字が使えるようになると気持ちがいい。
+        
+        でも、ファミコン風ではなくなりますね。。。'''
         )
-        self.messagebox.put('''きもはいれないようになりました''')
 
-        self.messagebox.put('''つぎはマウスでせんたくしたばしょに
-        じどうてきにいどうするようにします。''')
+        self.messagebox.put('''漢字が表示されるタイトルが多くなったのは
+        ＳＦＣからのような記憶があります。''')
+
+        self.messagebox.put('''多くの漢字を扱うには容量食いますね。
+        
+        このゲームでも数十ＫＢ分、フォントサイズ使って
+        ます。''')
 
         pyxel.mouse(True)
         self.buttons = []
@@ -219,11 +231,11 @@ class TestScene(Scene):
         # タイルを重ねて立体にする
         pyxel.bltm(0, 0, 1, 0, 0, 32, 32, 0)
 
-        # うさぎたちを描く
-        [usagi.draw() for usagi in self.usagii]
-
         # マウスの位置を書く
         self.draw_map_mouse_rect()
+
+        # うさぎたちを描く
+        [usagi.draw() for usagi in self.usagii]
 
         # メッセージボックスを描く
         self.messagebox.draw()
