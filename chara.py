@@ -42,7 +42,8 @@ SENSHI = (
 
 
 class Usagi(Charactor):
-    def __init__(self, target, x, y):
+    def __init__(self, map_scene, target, x, y):
+        self.map_scene = map_scene
         self.pos_x = x
         self.pos_y = y
 
@@ -85,21 +86,29 @@ class Usagi(Charactor):
         if self._move:
             return None
         
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.KEY_W):
             self._direct = 0
+            if self.map_scene.data[self.pos_y - 1][self.pos_x] not in self.map_scene.CANMOVE:
+                return None
             if self.pos_y > 0:
                 self._move = True
             return pyxel.KEY_UP
-        elif pyxel.btn(pyxel.KEY_DOWN):
-            self._move = True
+        elif pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.KEY_S):
             self._direct = 1
+            if self.map_scene.data[self.pos_y + 1][self.pos_x] not in self.map_scene.CANMOVE:
+                return None
+            self._move = True
             return pyxel.KEY_DOWN
-        elif pyxel.btn(pyxel.KEY_RIGHT):
+        elif pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_D):
             self._direct = 3
+            if self.map_scene.data[self.pos_y][self.pos_x + 1] not in self.map_scene.CANMOVE:
+                return None
             self._move = True
             return pyxel.KEY_RIGHT
-        elif pyxel.btn(pyxel.KEY_LEFT):
+        elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.KEY_A):
             self._direct = 2
+            if self.map_scene.data[self.pos_y][self.pos_x - 1] not in self.map_scene.CANMOVE:
+                return None
             if self.pos_x > 0:
                 self._move = True
             return pyxel.KEY_LEFT

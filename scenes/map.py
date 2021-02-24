@@ -126,23 +126,8 @@ class TestScene(Scene):
     def __init__(self, app):
         self.app = app
 
-        # うさぎたち
-        self.yusya = Usagi(YUSYA, 2, 4)
-        self.soryo = Usagi(SOURYO, 2, 3)
-        self.maho_tsukai = Usagi(MAHO_TSUKAI, 2, 2)
-        self.senshi = Usagi(SENSHI, 2, 1)
-        self.usagii = [
-            self.yusya,
-            self.soryo,
-            self.maho_tsukai,
-            self.senshi,
-        ]
-        #self.target = 0
-        self.direct_history = [
-            self.usagii[0]._direct,  # privateアクセス良くない
-            self.usagii[0]._direct,
-            self.usagii[0]._direct,
-        ]
+        # うさぎ
+        self.you = Usagi(self, YUSYA, 2, 4)
 
         # タイルマップ
         kusa = [[(0,6) for r in range(16)] for v in range(14)]
@@ -168,49 +153,14 @@ class TestScene(Scene):
 
         pyxel.mouse(True)
         self.buttons = []
-        #self.buttons = [
-        #    ui.MessageButton(pyxel, 50, 50, "たたかう", None),
-        #    ui.MessageButton(pyxel, 150, 50, "にげる", None)
-        #]
 
     def update(self):
         # スペース押したらメッセージを進める
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.messagebox.next()
-        
-        # うさぎを切り替えて動かすテスト
-        #if pyxel.btnp(pyxel.KEY_C):
-        #    self.target += 1
-
-        # mapの先が進めなければ移動させない
-        can_move = False
-        if pyxel.btn(pyxel.KEY_UP):
-            if self.data[self.usagii[0].pos_y - 1][self.usagii[0].pos_x] in self.CANMOVE:
-                can_move = True
-        elif pyxel.btn(pyxel.KEY_DOWN):
-            if self.data[self.usagii[0].pos_y + 1][self.usagii[0].pos_x] in self.CANMOVE:
-                can_move = True
-        elif pyxel.btn(pyxel.KEY_RIGHT):
-            if self.data[self.usagii[0].pos_y][self.usagii[0].pos_x + 1] in self.CANMOVE:
-                can_move = True
-        elif pyxel.btn(pyxel.KEY_LEFT):
-            if self.data[self.usagii[0].pos_y][self.usagii[0].pos_x - 1] in self.CANMOVE:
-                can_move = True
-        
-        if can_move:
-            # これはドラクエ歩きのサンプル
-            # 1匹だけ入力可にする
-            if self.usagii[0].input() and self.usagii[0]._move:
-                self.usagii[1]._move = True
-                self.usagii[1]._direct = self.direct_history[-1]
-                self.usagii[2]._move = True
-                self.usagii[2]._direct = self.direct_history[-2]
-                self.usagii[3]._move = True
-                self.usagii[3]._direct = self.direct_history[-3]
-                self.direct_history.append(self.usagii[0]._direct)
-
-        # うさぎたちの位置を全部更新する
-        [usagi.update() for usagi in self.usagii]
+    
+        self.you.input()
+        self.you.update()
 
         [button.update() for button in self.buttons]
 
@@ -235,8 +185,8 @@ class TestScene(Scene):
         self.draw_map_mouse_rect()
 
         # うさぎたちを描く
-        [usagi.draw() for usagi in self.usagii]
-
+        self.you.draw()
+        
         # メッセージボックスを描く
         self.messagebox.draw()
 
