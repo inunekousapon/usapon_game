@@ -7,7 +7,7 @@ class BaseState:
         self.app = app
         self.scene = scene
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('''うさぽんゲーム（仮）ｖ０．０．２''')
+        self.messagebox.put('''うさぽんゲーム（仮）ｖ０．０．３''')
         self.messagebox.showall()
         self.buttons = [
             ui.MessageButton(pyxel, self.app.font, 20, 40, "始める", ui.UIEvent(self, self.startgame_event)),
@@ -38,13 +38,12 @@ class UpdateState:
         self.scene = scene
         self.select_mode = 0  # 0:none 1:easy 2:normal 3:hard
         self.buttons = [
-            ui.MessageButton(pyxel, self.app.font, 30, 60, "様々な文字を表示できるようにしました", ui.UIEvent(self, self.yes_event, mode=2)),
+            ui.MessageButton(pyxel, self.app.font, 30, 60, "動き回れるようになりました", ui.UIEvent(self, self.yes_event, mode=2)),
             ui.MessageButton(pyxel, self.app.font, 105, 110, "戻る", ui.UIEvent(self, self.cancel_event)),
         ]
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('''漢字など、色んな文字を出力できます。
-        ○□のような記号も表示できます。
-        フォントのサイズを８Ｐｘから１０Ｐｘにしました。''')
+        self.messagebox.put('''マップを自由に動けるようになりました。
+        １０２４×１０２４のマップを歩き回れます。''')
         self.messagebox.showall()
 
     def update(self):

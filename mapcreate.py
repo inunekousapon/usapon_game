@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 from scipy.spatial import distance
 
 
-SIZE = 256
+SIZE = 512
 
 SEA = 0
 SAND = 1
@@ -74,9 +74,17 @@ def create_biome(size):
 img = Image.new('RGB', (SIZE, SIZE), 'blue')
 draw = ImageDraw.Draw(img)
 
-
-for row, cols in enumerate(create_biome(SIZE)):
+mapdata = enumerate(create_biome(SIZE))
+data = []
+for row, cols in mapdata:
+    line = ""
     for col, color in enumerate(cols):
         img.putpixel((col, row), COLORS[color])
+        line+=str(color)
+    data.append(line)
 
-img.show()
+img.save('asset/map.bmp', 'bmp')
+with open('asset/map.data', "w") as fo:
+    for line in data:
+        fo.write(line + '\n')
+

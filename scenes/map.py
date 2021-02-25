@@ -1,80 +1,10 @@
 import pyxel
 import numpy as np
-import scipy
 
 import ui
 from chara import Usagi
-from chara import YUSYA, MAHO_TSUKAI, SOURYO, SENSHI
+from chara import YUSYA
 
-
-def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
-    dh, dw = dest.shape
-    sh, sw = src.shape
-    cw = cw or sw
-    ch = ch or sh
-
-    rx1 = max(max(-dx, 0), max(-sx, 0))
-    ry1 = max(max(-dy, 0), max(-sy, 0))
-    rx2 = max(max(dx + cw - dw, 0), max(sx + cw - sw, 0))
-    ry2 = max(max(dy + ch - dh, 0), max(sy + ch - sh, 0))
-
-    cw -= rx1 + rx2
-    ch -= ry1 + ry2
-
-    if cw <= 0 or ch <= 0:
-        return False
-
-    dx += rx1
-    dy += ry1
-    sx += rx1
-    sy += ry1
-    dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
-
-    return True
-
-def adjacency_matrix(data):
-    for i, a in enumerate(data):
-        for j, b in enumerate(a):
-            if i > 0:
-                pass
-
-
-class TilemapHelper:
-    '''標準のタイルマップではできないことをする
-    
-    1. 8*8の扱いを16*16にする。
-    2. タイルをX,Y座標で設定できるようにする
-    '''
-
-    def __init__(self, tilemap):
-        self.tilemap = tilemap
-
-    @staticmethod
-    def set_tilemap(tilemap, x, y , data, refimg=None):
-        '''
-        dataを文字列ではなくて数値で渡せるように改良
-        '''
-        if refimg is not None:
-            tilemap.refimg = refimg
-        tilemap.set(x, y, data)
-        
-    def set_tilemap32(self, x, y, data32, refimg=None):
-        "pixelは8だけどこれは16ごとにタイルを扱う"
-        data = []
-        for line in data32:
-            list1 = ''
-            list2 = ''
-            for e in line:
-                r0 = e[0] * 2 + (e[1] * 0x40)
-                r1 = (e[0] * 2) + 1 + (e[1] * 0x40)
-                r2 = e[0] * 2 + (e[1] * 0x40) + 0x20
-                r3 = (e[0] * 2) + 1 + (e[1] * 0x40) + 0x20
-                list1 += format(r0, 'x') + format(r1, 'x')
-                list2 += format(r2, 'x') + format(r3, 'x')
-            data.append(list1)
-            data.append(list2)
-        TilemapHelper.set_tilemap(self.tilemap, x, y, data, refimg)
-        
 
 class Scene:
     def __init__(self, app):
@@ -100,56 +30,45 @@ class TestScene(Scene):
     # TARGET=(0, 1, 2, 3) 
 
     # とりあえず直値でタイルを指定
-    k = (0,6) # 草
-    u = (1,6) # 海
-    w = (4,6) # 木の上
-    m = (5,6) # 木の中
-    f = (6,6) # 木下
-    data = [
-        [k,k,k,k,k,k,k,k,k,k,k,k,u,u,u,u],
-        [k,k,k,k,k,k,k,k,k,k,k,u,u,u,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,u,u,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,u,k,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-        [w,w,w,w,w,w,w,k,k,w,w,w,w,w,w,w],
-        [m,m,m,m,m,m,m,k,k,m,m,m,m,m,m,m],
-        [f,f,f,f,f,f,f,k,k,f,f,f,f,f,f,f],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-        [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-    ]
-    CANMOVE = (k,)
+    k = (0,0) # 草
+    u = (1,0) # 海
+    w = (4,0) # 木の上
+    m = (5,0) # 木の中
+    f = (6,0) # 木下
+    h = (7,0) # 丘
+    b = (8,0) # 山
+    s = (9,0) # 砂
+    CANMOVE = (k,s,h)
+
+    MAP2DATA = {
+        "0": u,
+        "1": s,
+        "2": k,
+        "3": h,
+        "4": b,
+    }
 
     def __init__(self, app):
         self.app = app
 
-        # うさぎ
-        self.you = Usagi(self, YUSYA, 2, 4)
+        # マップの読み込み
+        with open('asset/map.data', "r") as fp:
+            self.data = []
+            for line in fp:
+                row = []
+                for c in line:
+                    if c == '\n':
+                        break
+                    row.append(self.MAP2DATA[c])
+                self.data.append(row)
 
-        # タイルマップ
-        kusa = [[(0,6) for r in range(16)] for v in range(14)]
-        self.tilemap_base = TilemapHelper(pyxel.tilemap(0))
-        self.tilemap_over = TilemapHelper(pyxel.tilemap(1))
-        self.tilemap_base.set_tilemap32(0, 0, kusa, 0)
-        self.tilemap_over.set_tilemap32(0, 0, self.data, 0)
+        # うさぎ
+        self.you = Usagi(self, YUSYA, 350, 350)
 
         # メッセージ
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('''やはり漢字が使えるようになると気持ちがいい。
-        
-        でも、ファミコン風ではなくなりますね。。。'''
+        self.messagebox.put('''きもちぃぃーーーーー！！！'''
         )
-
-        self.messagebox.put('''漢字が表示されるタイトルが多くなったのは
-        ＳＦＣからのような記憶があります。''')
-
-        self.messagebox.put('''多くの漢字を扱うには容量食いますね。
-        
-        このゲームでも数十ＫＢ分、フォントサイズ使って
-        ます。''')
 
         pyxel.mouse(True)
         self.buttons = []
@@ -164,6 +83,19 @@ class TestScene(Scene):
 
         [button.update() for button in self.buttons]
 
+    def draw_map(self):
+        for y, row in enumerate(self.data[self.you.pos_y - 8:self.you.pos_y + 8], start=-1):
+            for x, col in enumerate(row[self.you.pos_x - 9:self.you.pos_x + 9], start=-1):
+                pyxel.blt(
+                    x * 16 - self.you._x_delta,
+                    y * 16 - self.you._y_delta,
+                    0,
+                    col[0] * 16,
+                    col[1] * 16,
+                    16,
+                    16,
+                    0)
+
     def draw_map_mouse_rect(self):
         if (0 <= pyxel.mouse_x <= 255) and (0 <= pyxel.mouse_y <= 224):
             x = pyxel.mouse_x // 16
@@ -176,13 +108,11 @@ class TestScene(Scene):
     def draw(self):
         pyxel.cls(0)
 
-        # ベース
-        pyxel.bltm(0, 0, 0, 0, 0, 32, 32, 0)
-        # タイルを重ねて立体にする
-        pyxel.bltm(0, 0, 1, 0, 0, 32, 32, 0)
+        # マップを描く
+        self.draw_map()
 
         # マウスの位置を書く
-        self.draw_map_mouse_rect()
+        #self.draw_map_mouse_rect()
 
         # うさぎたちを描く
         self.you.draw()

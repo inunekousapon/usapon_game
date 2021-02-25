@@ -11,33 +11,11 @@ class Charactor():
     def draw(self):
         pass
 
-
-MAHO_TSUKAI = (
-    (5, 8), # 背中
-    (3, 8), # 正面
-    (6, 8), # 左
-    (6, 8), # 右
-)
-
-SOURYO = (
-    (3, 10), # 背中
-    (1, 10), # 正面
-    (4, 10), # 左
-    (4, 10), # 右
-)
-
 YUSYA = (
-    (2, 11), # 背中
-    (1, 11), # 正面
-    (3, 11), # 左
-    (3, 11), # 右
-)
-
-SENSHI = (
-    (2, 12), # 背中
-    (1, 12), # 正面
-    (3, 12), # 左
-    (3, 12), # 右
+    (2, 5), # 背中
+    (1, 5), # 正面
+    (3, 5), # 左
+    (3, 5), # 右
 )
 
 
@@ -116,8 +94,15 @@ class Usagi(Charactor):
 
     def draw(self):
         pyxel.blt(
-            self.pos_x * 16 + self._x_delta,
-            self.pos_y * 16 + self._y_delta,
+            8 * 16,
+            7 * 16,
             0,
             self.img[self._direct][0] * 16, self.img[self._direct][1] * 16,
-            (-1 if self._direct == 2 else 1) * 16, 16, 0)
+            (-1 if self._direct == 2 else 1) * 16, 16, 0
+        )
+        # pyxel.blt(
+        #     self.pos_x * 16 + self._x_delta,
+        #     self.pos_y * 16 + self._y_delta,
+        #     0,
+        #     self.img[self._direct][0] * 16, self.img[self._direct][1] * 16,
+        #     (-1 if self._direct == 2 else 1) * 16, 16, 0)
