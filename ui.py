@@ -1,4 +1,5 @@
 import sys
+from collections import deque
 
 
 class UIEvent:
@@ -14,8 +15,11 @@ class UIEvent:
 
 class MessageBox:
     'メッセージボックスを表示する'
-    COLOR = 7
+    BORDER_COLOR = 7
     BACKGROUND = 0
+    STRING_COLOR = 7
+    LINES = 4
+    STRING_NUM = 23
 
     def __init__(self, pyxel, font, x, y, width, height):
         self.font = font
@@ -26,39 +30,41 @@ class MessageBox:
         self.height = height    # 高さ
         self.padding_x = 4      # 線からの横padding
         self.padding_y = 4      # 線からの縦padding
-        self.queue = []         # ここに積まれている分、文字列を表示する
-        self.message = ''       # 今、表示しているメッセージ
-        self.frame_count = sys.maxsize  # 最大値入れておいて何がなんでも表示しない
+        self.queue = deque()    # ここに積まれている分、文字列を表示する
+        self.message = []       # 今、表示しているメッセージ
 
-    def put(self, txt):
+    def put(self, txt, color=STRING_COLOR):
         'txtに入れた文字列を表示する文字列に登録する'
-        self.queue.append(txt)
-
+        self.queue.extend([(c, color) for c in txt])
+        lines = []
+        line = deque()
+        for c in self.queue:
+            if c[0] == '\n':
+                lines.append(line.copy())
+                line.clear()
+                continue
+            line.append(c)
+            if len(line) > self.STRING_NUM:
+                lines.append(line.copy())
+                line.clear()
+                continue
+        else:
+            lines.append(line.copy())
+        self.message = lines[-4:]
+        
     def next(self):
-        '次に表示する文字列を見せる'
-        if self.queue:
-            self.frame_count = self.pyxel.frame_count
-            self.message = self.queue.pop(0)
+        pass
 
     def showall(self):
-        if self.queue:
-            self.frame_count = -999
-            self.message = self.queue.pop(0)
+        pass
 
     def draw(self):
         self.pyxel.rect(self.x, self.y, self.width, self.height, MessageBox.BACKGROUND)
-        self.pyxel.rectb(self.x, self.y, self.width, self.height, MessageBox.COLOR)
+        self.pyxel.rectb(self.x, self.y, self.width, self.height, MessageBox.BORDER_COLOR)
 
-        # 1フレームずつ表示する文字列の長さを変えていく
-        str_count = self.pyxel.frame_count - self.frame_count
         if self.message:
-            lines = self.message.split('\n')
-            for index, line in enumerate(lines):
-                line = line.strip()
-                self.font.display_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y + index * 10, line[:str_count])
-                str_count -= len(line)
-                if str_count <= 0:
-                    break
+            for index, line in enumerate(self.message):
+                self.font.display_color_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y + index * 10, line)
 
 
 class MouseEvent:

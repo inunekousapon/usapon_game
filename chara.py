@@ -28,7 +28,7 @@ class Usagi(Charactor):
         self.img = target
         self._move = False
         self._direct = 1    # 0:背面 1:正面 2:左 3:右
-        self._move_px = 3   # 1フレームに動くピクセル数
+        self._move_px = 2   # 1フレームに動くピクセル数
         self._move_delta = 0    # 移動したピクセル数
         self._x_delta = 0       # 移動した横方向のピクセル数
         self._y_delta = 0       # 移動した縦方向のピクセル数
@@ -95,14 +95,8 @@ class Usagi(Charactor):
     def draw(self):
         pyxel.blt(
             8 * 16,
-            7 * 16,
+            5 * 16,
             0,
             self.img[self._direct][0] * 16, self.img[self._direct][1] * 16,
             (-1 if self._direct == 2 else 1) * 16, 16, 0
         )
-        # pyxel.blt(
-        #     self.pos_x * 16 + self._x_delta,
-        #     self.pos_y * 16 + self._y_delta,
-        #     0,
-        #     self.img[self._direct][0] * 16, self.img[self._direct][1] * 16,
-        #     (-1 if self._direct == 2 else 1) * 16, 16, 0)

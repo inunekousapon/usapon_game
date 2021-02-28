@@ -84,7 +84,7 @@ class TestScene(Scene):
         [button.update() for button in self.buttons]
 
     def draw_map(self):
-        for y, row in enumerate(self.data[self.you.pos_y - 8:self.you.pos_y + 8], start=-1):
+        for y, row in enumerate(self.data[self.you.pos_y - 6:self.you.pos_y + 10], start=-1):
             for x, col in enumerate(row[self.you.pos_x - 9:self.you.pos_x + 9], start=-1):
                 pyxel.blt(
                     x * 16 - self.you._x_delta,
@@ -96,23 +96,11 @@ class TestScene(Scene):
                     16,
                     0)
 
-    def draw_map_mouse_rect(self):
-        if (0 <= pyxel.mouse_x <= 255) and (0 <= pyxel.mouse_y <= 224):
-            x = pyxel.mouse_x // 16
-            y = pyxel.mouse_y // 16
-            if self.data[y][x] in self.CANMOVE:
-                pyxel.rect(x * 16, y * 16, 16, 16, 6)
-            else:
-                pyxel.rect(x * 16, y * 16, 16, 16, 8)
-
     def draw(self):
         pyxel.cls(0)
 
         # マップを描く
         self.draw_map()
-
-        # マウスの位置を書く
-        #self.draw_map_mouse_rect()
 
         # うさぎたちを描く
         self.you.draw()
