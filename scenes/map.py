@@ -3,7 +3,7 @@ import numpy as np
 
 import ui
 from chara import Usagi
-from chara import YUSYA, MAGICIAN
+from chara import MAGICIAN, CLERIC, HERO, FIGHTER
 
 
 class Scene:
@@ -71,6 +71,9 @@ class TestScene(Scene):
         self.messagebox.put('無防備ですね。')
         self.messagebox.put('\nかわいいですね。', pyxel.COLOR_RED)
 
+        self.targets = [MAGICIAN, CLERIC, HERO, FIGHTER]
+        self.current = 0
+
         pyxel.mouse(True)
         self.buttons = []
 
@@ -78,6 +81,10 @@ class TestScene(Scene):
         # スペース押したらメッセージを進める
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.messagebox.next()
+
+        if pyxel.btnp(pyxel.KEY_C):
+            self.current += 1
+            self.you.target = self.targets[self.current%4]
     
         self.you.input()
         self.you.update()
