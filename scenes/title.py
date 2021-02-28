@@ -7,8 +7,8 @@ class BaseState:
         self.app = app
         self.scene = scene
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('''うさぽんゲーム（仮）ｖ０．０．３''')
-        self.messagebox.showall()
+        self.messagebox.put('うさぽんゲーム（仮）', pyxel.COLOR_ORANGE)
+        self.messagebox.put('ｖ０．０．４')
         self.buttons = [
             ui.MessageButton(pyxel, self.app.font, 20, 40, "始める", ui.UIEvent(self, self.startgame_event)),
         ]
@@ -38,13 +38,18 @@ class UpdateState:
         self.scene = scene
         self.select_mode = 0  # 0:none 1:easy 2:normal 3:hard
         self.buttons = [
-            ui.MessageButton(pyxel, self.app.font, 30, 60, "動き回れるようになりました", ui.UIEvent(self, self.yes_event, mode=2)),
+            ui.MessageButton(pyxel, self.app.font, 30, 60, "文字に色がついたよ", ui.UIEvent(self, self.yes_event, mode=2)),
             ui.MessageButton(pyxel, self.app.font, 105, 110, "戻る", ui.UIEvent(self, self.cancel_event)),
         ]
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('''マップを自由に動けるようになりました。
-        １０２４×１０２４のマップを歩き回れます。''')
-        self.messagebox.showall()
+        self.messagebox.put('文字', pyxel.COLOR_PEACH)
+        self.messagebox.put('に色を付けることができるようになりました！！')
+        self.messagebox.put('\nこんな', pyxel.COLOR_LIME)
+        self.messagebox.put('こんな', pyxel.COLOR_LIGHTBLUE)
+        self.messagebox.put('こんな', pyxel.COLOR_PURPLE)
+        self.messagebox.put('こんな', pyxel.COLOR_RED)
+        self.messagebox.put('こんな', pyxel.COLOR_YELLOW)
+        self.messagebox.put('文字を書くことができます！できまーす！')
 
     def update(self):
         if self.select_mode:

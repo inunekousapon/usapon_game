@@ -26,7 +26,7 @@ class App:
             0x83769C,
             0xFF77A8,
             0xFFCCAA])
-        pyxel.image(0).load(0, 0, os.path.join(os.getcwd(), 'asset/system.bmp'))
+        pyxel.image(0).load(0, 0, os.path.join(os.getcwd(), 'asset/system_neko.bmp'))
         im = Image.open(os.path.join(os.getcwd(), 'asset/font.png'))
         rgb_im = im.convert('RGB')
         self.font = Font(rgb_im)

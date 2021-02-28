@@ -32,3 +32,13 @@ class Font:
                     r,g,b = self.font_img.getpixel((self.char_pos[s][0]+i, self.char_pos[s][1]+j))
                     if r == g == b == 255:
                         pyxel.pset(x + (index * 10) + i, y + j, pyxel.COLOR_WHITE)
+
+    def display_color_text(self, pyxel, x, y, tc):
+         for index, (s, color) in enumerate(tc):
+            if not s in self.char_pos:
+                s = '？'
+            for i in range(10):
+                for j in range(9):
+                    r,g,b = self.font_img.getpixel((self.char_pos[s][0]+i, self.char_pos[s][1]+j))
+                    if r == g == b == 255:
+                        pyxel.pset(x + (index * 10) + i, y + j, color)
