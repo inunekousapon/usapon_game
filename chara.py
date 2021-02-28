@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Tuple
+
 import pyxel
 
 
@@ -11,11 +14,39 @@ class Charactor():
     def draw(self):
         pass
 
+
+@dataclass
+class CharactorImages:
+    stand_images: Tuple[Tuple[int, int]]
+    work_images: Tuple[Tuple[Tuple[int, int]]]
+
 YUSYA = (
     (2, 5), # 背中
     (1, 5), # 正面
     (3, 5), # 左
     (3, 5), # 右
+)
+
+MAGICIAN = (
+    (1, 3), # 背中
+    (0, 3), # 正面
+    (2, 3), # 左
+    (2, 3), # 右
+)
+
+MAGICIAN = CharactorImages(
+    stand_images=(
+        (1, 3), # 背中
+        (0, 3), # 正面
+        (2, 3), # 左
+        (2, 3), # 右
+    ),
+    work_images=(
+        ((6,3), (7,3)), # 背中
+        ((4,3), (5,3)), # 正面
+        ((8,3), (9,3)), # 左
+        ((8,3), (9,3)), # 右
+    )
 )
 
 
@@ -25,7 +56,7 @@ class Usagi(Charactor):
         self.pos_x = x
         self.pos_y = y
 
-        self.img = target
+        self.target = target
         self._move = False
         self._direct = 1    # 0:背面 1:正面 2:左 3:右
         self._move_px = 2   # 1フレームに動くピクセル数
@@ -93,10 +124,17 @@ class Usagi(Charactor):
         return None
 
     def draw(self):
+        image = self.target.stand_images[self._direct]
+        if self._move_delta > 0:
+            if self._direct in (0, 1):
+                image = self.target.work_images[self._direct][self.pos_y % 2]
+            else:
+                image = self.target.work_images[self._direct][self.pos_x % 2]
+
         pyxel.blt(
             8 * 16,
             5 * 16,
             0,
-            self.img[self._direct][0] * 16, self.img[self._direct][1] * 16,
+            image[0] * 16, image[1] * 16,
             (-1 if self._direct == 2 else 1) * 16, 16, 0
         )

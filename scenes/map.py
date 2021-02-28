@@ -3,7 +3,7 @@ import numpy as np
 
 import ui
 from chara import Usagi
-from chara import YUSYA
+from chara import YUSYA, MAGICIAN
 
 
 class Scene:
@@ -63,12 +63,13 @@ class TestScene(Scene):
                 self.data.append(row)
 
         # うさぎ
-        self.you = Usagi(self, YUSYA, 350, 350)
+        self.you = Usagi(self, MAGICIAN, 350, 350)
 
         # メッセージ
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('''きもちぃぃーーーーー！！！'''
-        )
+        self.messagebox.put('うさぎが歩くようになりました。')
+        self.messagebox.put('無防備ですね。')
+        self.messagebox.put('\nかわいいですね。', pyxel.COLOR_RED)
 
         pyxel.mouse(True)
         self.buttons = []
