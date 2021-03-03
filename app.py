@@ -32,7 +32,6 @@ class App:
         rgb_im = im.convert('RGB')
         self.font = Font(rgb_im)
         self.scene_manager = SceneManager(self)
-        self.network = Network()
         pyxel.run(self.update, self.draw)
 
     def update(self):

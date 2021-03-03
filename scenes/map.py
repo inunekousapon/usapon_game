@@ -1,3 +1,4 @@
+import sys
 import pyxel
 import numpy as np
 
@@ -51,9 +52,6 @@ class TestScene(Scene):
     def __init__(self, app):
         self.app = app
 
-        # Network Start
-        self.app.network.start()
-
         # マップの読み込み
         with open('asset/map.data', "r") as fp:
             self.data = []
@@ -74,6 +72,10 @@ class TestScene(Scene):
         self.targets = [MAGICIAN, CLERIC, HERO, FIGHTER]
         self.current = 0
 
+        self.times = []
+
+        self.messagebox.put("僕たち私達は、画面描画を早くします。早くできたらもっと快適にゲームをプレイできると思います。たくさんたくさんたくさんたくさんたくさん計測して頑張って早くしますね！！ご期待ください。")
+
         pyxel.mouse(True)
         self.buttons = []
 
@@ -90,9 +92,6 @@ class TestScene(Scene):
         self.you.update()
 
         [button.update() for button in self.buttons]
-
-        if not self.app.network.queue.empty():
-            self.messagebox.put(str(self.app.network.queue.get()))
 
     def draw_map(self):
         for y, row in enumerate(self.data[self.you.pos_y - 6:self.you.pos_y + 10], start=-1):
@@ -118,6 +117,6 @@ class TestScene(Scene):
         
         # メッセージボックスを描く
         self.messagebox.draw()
-
+        
         [button.draw() for button in self.buttons]
     

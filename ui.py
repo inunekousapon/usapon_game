@@ -28,10 +28,11 @@ class MessageBox:
         self.y = y              # ボックスの上
         self.width = width      # 横幅
         self.height = height    # 高さ
-        self.padding_x = 4      # 線からの横padding
+        self.padding_x = 2      # 線からの横padding
         self.padding_y = 4      # 線からの縦padding
         self.queue = deque()    # ここに積まれている分、文字列を表示する
         self.message = []       # 今、表示しているメッセージ
+        self.pre_message = None
 
     def put(self, txt, color=STRING_COLOR):
         'txtに入れた文字列を表示する文字列に登録する'
@@ -63,8 +64,14 @@ class MessageBox:
         self.pyxel.rectb(self.x, self.y, self.width, self.height, MessageBox.BORDER_COLOR)
 
         if self.message:
-            for index, line in enumerate(self.message):
-                self.font.display_color_text(self.pyxel, self.x + self.padding_x, self.y + self.padding_y + index * 10, line)
+            if self.pre_message != self.message:
+                self.pre_message = self.message
+                for i in range(256):
+                    for j in range(256):
+                        self.pyxel.image(2).data[i][j] = 0
+                for index, line in enumerate(self.message):
+                    self.font.color_text_flipflop(self.pyxel.image(2), 0, index * 10, line)
+            self.pyxel.blt(self.x + self.padding_x, self.y + self.padding_y, 2, 0, 0, self.width - self.padding_x * 2, self.height - self.padding_y * 2)
 
 
 class MouseEvent:

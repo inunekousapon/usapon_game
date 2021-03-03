@@ -4,6 +4,7 @@ import string
 class Font:
     def __init__(self, font_img):
         self.font_img = font_img
+        self.img_data = self.font_img.getdata()
         self.size = (10, 10)
         self.image_size = (1450, 1450)
         ascii_chars = string.punctuation + string.digits + string.ascii_letters
@@ -34,11 +35,21 @@ class Font:
                         pyxel.pset(x + (index * 10) + i, y + j, pyxel.COLOR_WHITE)
 
     def display_color_text(self, pyxel, x, y, tc):
-         for index, (s, color) in enumerate(tc):
+        for index, (s, color) in enumerate(tc):
             if not s in self.char_pos:
                 s = '？'
             for i in range(10):
                 for j in range(9):
-                    r,g,b = self.font_img.getpixel((self.char_pos[s][0]+i, self.char_pos[s][1]+j))
+                    r,g,b = self.img_data[(self.char_pos[s][1] + j) * self.image_size[0] + self.char_pos[s][0] + i]
                     if r == g == b == 255:
                         pyxel.pset(x + (index * 10) + i, y + j, color)
+
+    def color_text_flipflop(self, image, x, y, tc):
+        for index, (s, color) in enumerate(tc):
+            if not s in self.char_pos:
+                s = '？'
+            for i in range(10):
+                for j in range(9):
+                    r,g,b = self.img_data[(self.char_pos[s][1] + j) * self.image_size[0] + self.char_pos[s][0] + i]
+                    if r == g == b == 255:
+                        image.data[y + j][x + (index * 10) + i] = color
