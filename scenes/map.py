@@ -51,6 +51,9 @@ class TestScene(Scene):
     def __init__(self, app):
         self.app = app
 
+        # Network Start
+        self.app.network.start()
+
         # マップの読み込み
         with open('asset/map.data', "r") as fp:
             self.data = []
@@ -67,9 +70,6 @@ class TestScene(Scene):
 
         # メッセージ
         self.messagebox = ui.MessageBox(pyxel, self.app.font, 5, 174, 245, 48)
-        self.messagebox.put('うさぎが歩くようになりました。')
-        self.messagebox.put('無防備ですね。')
-        self.messagebox.put('\nかわいいですね。', pyxel.COLOR_RED)
 
         self.targets = [MAGICIAN, CLERIC, HERO, FIGHTER]
         self.current = 0
@@ -90,6 +90,9 @@ class TestScene(Scene):
         self.you.update()
 
         [button.update() for button in self.buttons]
+
+        if not self.app.network.queue.empty():
+            self.messagebox.put(str(self.app.network.queue.get()))
 
     def draw_map(self):
         for y, row in enumerate(self.data[self.you.pos_y - 6:self.you.pos_y + 10], start=-1):

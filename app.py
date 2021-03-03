@@ -5,6 +5,7 @@ from PIL import Image
 
 from scene_manager import SceneManager
 from font import Font
+from network import Network
 
 
 class App:
@@ -31,6 +32,7 @@ class App:
         rgb_im = im.convert('RGB')
         self.font = Font(rgb_im)
         self.scene_manager = SceneManager(self)
+        self.network = Network()
         pyxel.run(self.update, self.draw)
 
     def update(self):
